@@ -1,0 +1,15 @@
+﻿Logs/
+*.log
+*.pfx
+*.p12
+.vscode/
+.idea/
+*.swp
+*.bak
+*.exe
+bin/
+obj/
+Output/
+Thumbs.db
+Desktop.ini
+*.tmp
