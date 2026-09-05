@@ -1,279 +1,223 @@
+<div align="center">
+
 # NeoTech Toolkit
 
-Boîte à outils d'administration et de diagnostic Windows, portable, signée Authenticode, sans dépendance externe.
+**Boîte à outils d'administration et de diagnostic Windows, en PowerShell.**
 
-Auteur : **Neo Soda** — [TechSentinel.fr](https://techsentinel.fr)
-Copyright : (c) 2026 TechSentinel — Tous droits réservés.
-Version : **1.0.0**
+Console + GUI · Portable · Signée · Aucun prérequis
 
----
+[Installation](#installation) · [Utilisation](#utilisation) · [Modules](#modules) · [Build EXE](#build-exe) · [Signer](#signature-authenticode)
 
-## Sommaire
-
-1. [Pourquoi ce toolkit](#pourquoi-ce-toolkit)
-2. [Fonctionnalités](#fonctionnalités)
-3. [Installation / premier lancement](#installation--premier-lancement)
-4. [Utilisation](#utilisation)
-5. [Mode CLI / automatisation](#mode-cli--automatisation)
-6. [Architecture](#architecture)
-7. [Confiance Windows et antivirus](#confiance-windows-et-antivirus)
-8. [Logs et diagnostic](#logs-et-diagnostic)
-9. [Limitations connues](#limitations-connues)
+</div>
 
 ---
 
-## Pourquoi ce toolkit
+## À propos
 
-- **Portable** : un seul dossier, copiable sur clé USB.
-- **Fiable** : gestion d'erreurs par fonction, logs persistants avec rotation, pas d'`Invoke-Expression` caché.
-- **Légitime** : scripts signés Authenticode, certificat importé dans le magasin de confiance Windows, métadonnées de version, pas de pattern `findstr|pipe-powershell` qui déclenche AMSI.
-- **Lisible** : modules PowerShell bien découpés, un module = une responsabilité, comment-based-help.
-- **Pas de dépendance externe** : aucun `Install-Module` requis, fonctionne hors-ligne.
+NeoTech Toolkit est un outil tout-en-un pour les admins et techniciens Windows. Il remplace 10+ scripts éparpillés par un exécutable unique, portable, qui fait l'audit matériel, la诊断 réseau, la posture de sécurité, l'inventaire logiciel, la réparation système et l'export de rapport.
 
----
+Conçu pour le terrain : aucune dépendance externe, fonctionne depuis une clé USB, signe ses propres scripts, compile en `.exe` unique.
 
-## Fonctionnalités
+## Aperçu
 
-### Audit matériel
-- Synthèse machine et OS
-- Inventaire CPU, RAM (avec type DDR), carte mère, GPU
-- Inventaire des pilotes (tous + détection des pilotes anciens)
-- Stockage : volumes, disques physiques, SMART (Storage Reliability Counter)
-- Batterie (laptop) + rapport energy-report
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│ NEOTECH TOOLKIT  v1.0.0  -  Administration & Diagnostic Windows         │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ⚙  Audit Matériel    CPU, RAM, stockage, pilotes                  │
+│  🌐 Réseau             Audit, réparation, ports en écoute            │
+│  🔒 Sécurité           TPM, Defender, BitLocker, UAC, comptes        │
+│  📦 Logiciels          Installés, Windows Update, démarrage          │
+│  🔧 Réparation         SFC, DISM, reset WU, nettoyage temp          │
+│  ⚙ Outils admin         MMC, CPL, registre, services                 │
+│  📄 Rapport            Export TXT + HTML horodaté                    │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+```
 
-### Réseau
-- Audit complet : interfaces, IP v4/v6, DNS, passerelle, DHCP
-- Connectivité (1.1.1.1, 8.8.8.8, google.com, microsoft.com, github.com)
-- Profils Wi-Fi enregistrés
-- Cache ARP
-- Ports en écoute (avec processus propriétaire)
-- Réparation : flush DNS, renouvellement DHCP, reset Winsock
-- Reset complet pile réseau (avec confirmation)
+**Deux interfaces** :
 
-### Sécurité
-- TPM (présence, version, propriétaire)
-- Secure Boot
-- BitLocker (état par volume)
-- Windows Defender (signatures, mode temps réel, tamper protection)
-- Pare-feu (par profil)
-- UAC (lecture registre des stratégies)
-- Comptes locaux + membres du groupe Administrateurs
-- Résultat de stratégie de groupe (gpresult)
+| Console | GUI (WPF) |
+|---|---|
+| `NeoTech Toolkit.bat` | `NeoTech Toolkit.bat` (défaut) |
+| `NeoTech Toolkit.bat CONSOLE` | — |
+| 130×42, ANSI colors, Unicode box-drawing | Thème sombre moderne, sidebar 7 catégories |
 
-### Logiciels
-- Liste des logiciels installés (32/64 bits, user + machine)
-- Windows Update (historique, en attente)
-- Démarrage : registres Run + dossiers Startup + tâches planifiées
-- Tâches planifiées (toutes sources, prochaine exécution)
-- Services Windows (résumé + services Auto arrêtés)
-- Processus (top CPU, top RAM, compteurs globaux)
-- Observateur d'événements (erreurs System/Application 24h)
-- Snapshot performance (CPU/RAM sur N secondes)
+## Captures
 
-### Réparation
-- Health check rapide (SFC verifyonly + espace disque)
-- SFC /scannow
-- DISM CheckHealth / ScanHealth / RestoreHealth
-- Reset Windows Update (services + renommage SoftwareDistribution / catroot2)
-- Nettoyage fichiers temporaires (utilisateur + Windows)
+> *À venir : captures d'écran de la console et de la GUI.*
 
-### Outils admin (lanceurs)
-- Gestionnaire de périphériques, Connexions réseau, Gestion de l'ordinateur
-- Observateur d'événements, Éditeur du registre, Services MMC
-- Invite de commandes admin, Planificateur de tâches
+## Installation
 
-### Rapport
-- Export complet **TXT** (lisibilité brute)
-- Export complet **HTML** (présentation propre, prêt à partager)
-- Sur le bureau, horodaté par nom de machine
+### Téléchargement direct
 
----
+1. Télécharge [`NeoTechToolkit-vX.Y.Z.zip`](../../releases/latest)
+2. Dézippe où tu veux (clé USB, `C:\Tools\`, etc.)
+3. Double-clique sur `NeoTech Toolkit.bat`
 
-## Installation / premier lancement
+### Depuis le repo
 
-### Sur une nouvelle machine
+```bash
+git clone https://github.com/neosoda/NeoTech-Toolkit.git
+cd NeoTech-Toolkit
+.\NeoTech Toolkit.bat
+```
 
-1. **Copier** le dossier `NeoTechToolkit\` où vous voulez (clé USB, `C:\Tools\`, bureau, etc.).
-2. **Signer** les scripts (génère le certificat auto-signé) :
-   ```powershell
-   cd C:\chemin\vers\NeoTechToolkit\Tools
-   powershell -NoProfile -ExecutionPolicy Bypass -File .\Sign-NeoTech.ps1
-   ```
-3. **Importer** le certificat comme éditeur de confiance (UAC) :
-   ```powershell
-   powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-TrustedPublisher.ps1
-   ```
-4. **Lancer** :
-   - Double-clic sur `NeoTech Toolkit.bat`, **ou**
-   - PowerShell : `.\NeoTech-Toolkit.ps1`
+> **Prérequis** : Windows 10+ · PowerShell 5.1+ (intégré) · Droits admin pour la section sécurité/réseau
 
-> **Important** : l'étape 3 doit être répétée sur chaque machine où vous voulez
-> que Windows fasse confiance au toolkit sans alerte. Sinon, le .ps1 est bien
-> signé mais Windows affiche "Éditeur inconnu" au premier lancement.
+## Signature Authenticode
 
----
+Tous les scripts `.ps1` et `.psm1` sont signés avec un certificat auto-signé. Pour que Windows fasse confiance au toolkit sans alerte SmartScreen :
+
+```powershell
+# Une seule fois, en admin :
+.\Tools\Install-TrustedPublisher.ps1
+```
+
+Cela importe le certificat dans `LocalMachine\TrustedPeople`. Le toolkit est alors reconnu comme **éditeur de confiance** sur cette machine.
 
 ## Utilisation
 
 ### Menu interactif
 
-Lancer `NeoTech Toolkit.bat` (ou `NeoTech-Toolkit.ps1` directement) ouvre le menu
-numéroté. Tapez le numéro de la section et `Entrée`.
+```cmd
+NeoTech Toolkit.bat          REM GUI (defaut)
+NeoTech Toolkit.bat CONSOLE  REM Console texte
+```
 
-Sections principales :
+Les deux interfaces exposent les mêmes 7 catégories, accessibles par sous-menus.
 
-- `[1–5]`  Audit matériel
-- `[6–9]`  Réseau
-- `[11–13]` Sécurité
-- `[14–23]` Logiciels, démarrage, performances
-- `[30–34]` Réparation système
-- `[40–47]` Outils administrateur (MMC/CPL)
-- `[R]`     Export rapport complet
-- `[I]`     À propos
-- `[Q]`     Quitter
-
-### Raccourcis utiles
-
-| Touche | Action |
-|--------|--------|
-| `R`    | Exporte rapport TXT + HTML sur le bureau |
-| `I`    | Affiche la version, l'emplacement du log, l'état admin |
-| `Q`    | Quitter proprement (log écrit) |
-
----
-
-## Mode CLI / automatisation
-
-Le script supporte l'exécution non-interactive :
+### Mode CLI / automatisation
 
 ```powershell
-# Rapport complet (TXT + HTML sur le bureau) sans menu
+# Rapport complet (TXT + HTML sur le bureau)
 .\NeoTech-Toolkit.ps1 -ReportOnly
 
 # Sections spécifiques
 .\NeoTech-Toolkit.ps1 -ReportOnly -Sections Overview,Hardware,Network
 
-# Mode headless : pas d'attente clavier (utile dans un script)
+# Tâche planifiée (headless)
 .\NeoTech-Toolkit.ps1 -ReportOnly -Headless
 ```
 
-Utile pour :
-- Tâche planifiée hebdomadaire qui dépose un rapport HTML sur un partage réseau
-- Diagnostic distant via WinRM / SSH PowerShell
-- Intégration dans un RMM (NinjaOne, TacticalRMM, etc.)
+### Logs
 
----
+Tout est tracé dans `Logs\NeoTech_<MACHINE>.log` (UTF-8, rotation à 2 MB).
+
+```
+[2026-09-05 14:23:15.123] [Info] [Main] Demarrage NeoTech Toolkit (admin OK)
+[2026-09-05 14:23:18.456] [Warning] [Network] TIMEOUT (5s) : Test google.com
+[2026-09-05 14:23:25.012] [Error] [Security] Acces refuse a gpresult
+```
+
+## Modules
+
+| Module | Rôle | Fonctions |
+|---|---|---|
+| `NTCommon` | Helpers partagés | logs, formatting, élévation, timeouts, GUI helpers |
+| `NTAudit` | Audit matériel | OS, hardware, pilotes, logiciels, Windows Update |
+| `NTNetwork` | Réseau | audit, réparation, ports en écoute (avec timeouts) |
+| `NTStorage` | Stockage | volumes, SMART, espace disque, temp |
+| `NTSecurity` | Sécurité | TPM, Defender, BitLocker, UAC, firewall, comptes, GPO |
+| `NTPower` | Alimentation | batterie, plans d'alimentation |
+| `NTStartup` | Démarrage | Run, Startup, tâches planifiées |
+| `NTPerformance` | Perf | processus, services, events, snapshot |
+| `NTRepair` | Réparation | SFC, DISM, reset WU, health check |
+| `NTReport` | Rapport | export TXT + HTML |
+| `NTGUI` | Interface | WPF, XAML, sidebar, capture de sortie |
+
+## Build EXE
+
+Pour compiler en `.exe` unique (autonome, signé, demande UAC au lancement) :
+
+```powershell
+# Installer ps2exe (une seule fois)
+Install-Module ps2exe -Scope CurrentUser
+
+# Compiler
+.\Tools\Build-EXE.ps1
+```
+
+Le `.exe` est dans `Tools\NeoTech-Toolkit.exe`. Aucune dépendance, intégrable dans un RMM, distribuable en pièce jointe.
 
 ## Architecture
 
 ```
 NeoTechToolkit\
-├── NeoTech Toolkit.bat              # Lanceur Windows (shim)
-├── NeoTech-Toolkit.ps1              # Point d'entree, menu principal
+├── NeoTech Toolkit.bat              # Lanceur Windows
+├── NeoTech-Toolkit.ps1              # Entry point console
+├── NeoTech-Toolkit-GUI.ps1          # Entry point GUI
 ├── README.md
 ├── Modules\
-│   ├── NTCommon.psm1                # Logging, formatting, elevation, errors
-│   ├── NTAudit.psm1                 # OS, hardware, drivers
-│   ├── NTNetwork.psm1               # Reseau audit + reparation
-│   ├── NTStorage.psm1               # Volumes, disques, SMART, temp
-│   ├── NTSecurity.psm1              # TPM, BitLocker, Defender, UAC, GPO
-│   ├── NTPower.psm1                 # Batterie, plans d'alimentation
-│   ├── NTStartup.psm1               # Run, Startup, taches planifiees
-│   ├── NTPerformance.psm1           # Processus, services, events, perf
-│   ├── NTRepair.psm1                # SFC, DISM, reset WU, sante
-│   └── NTReport.psm1                # Generation TXT + HTML
+│   ├── NTCommon.psm1                # Helpers partages
+│   ├── NTAudit.psm1
+│   ├── NTNetwork.psm1
+│   ├── NTStorage.psm1
+│   ├── NTSecurity.psm1
+│   ├── NTPower.psm1
+│   ├── NTStartup.psm1
+│   ├── NTPerformance.psm1
+│   ├── NTRepair.psm1
+│   ├── NTReport.psm1
+│   └── NTGUI.psm1
 ├── Tools\
-│   ├── Sign-NeoTech.ps1             # Genere cert + signe scripts
-│   ├── Install-TrustedPublisher.ps1 # Import cert en TrustedPeople
-│   └── NeoTech-Toolkit.cer          # Cert exporte (apres signature)
-├── Logs\                            # Logs rotatifs (2 MB max)
-└── Reports\                         # Rapports (si generes via mode CLI)
+│   ├── Sign-NeoTech.ps1             # Genere le cert + signe les scripts
+│   ├── Install-TrustedPublisher.ps1 # Importe le cert en TrustedPeople
+│   └── Build-EXE.ps1                # Compile en .exe via ps2exe
+└── Logs\                            # Logs runtime (rotation 2 MB)
 ```
 
-Conventions :
-- Préfixe `NT` partout (NeoTech) → collision impossible avec les cmdlets Microsoft.
-- Préfixe `Get-`/`Set-`/`Repair-`/`Reset-`/`Clear-`/`Open-`/`Show-`/`Wait-`/`Read-`/`Request-`/`Assert-`/`Test-`/`Format-`/`Write-`/`Invoke-`/`New-`/`Export-`/`Import-`.
-- Comment-based help (`<# .SYNOPSIS ... #>`) sur chaque fonction exportée.
-- `Set-StrictMode -Version Latest` et `$ErrorActionPreference = 'Stop'` au démarrage.
+## Signer ses propres scripts
 
----
+```powershell
+# 1. Generer le cert (une seule fois, RSA-2048 / SHA-256 / 5 ans)
+.\Tools\Sign-NeoTech.ps1
 
-## Confiance Windows et antivirus
-
-### Pourquoi le `.bat` hybride d'origine se faisait flagguer
-
-L'ancien `NeoTech Toolkit.bat` utilisait le pattern :
-```bat
-@findstr /v "^@findstr" "%~f0" | powershell.exe -NoProfile -ExecutionPolicy Bypass -Command -
+# 2. Signer tous les .ps1 / .psm1
+# (fait automatiquement par Sign-NeoTech.ps1)
 ```
 
-C'est **exactement** la technique d'obfuscation de malware. AMSI et Defender
-la détectent, à raison.
+## Robustesse
 
-### Ce que fait la nouvelle version
+Chaque fonction applique trois principes :
 
-1. **Fichiers .ps1 / .psm1 séparés** (pas de payload inline) — structure normale d'un outil IT.
-2. **Pas de `-ExecutionPolicy Bypass` au lancement** — on utilise `RemoteSigned` (le script étant signé, il est exécuté sans warning).
-3. **Pas de `Invoke-Expression`**, pas de chaînes encodées en Base64, pas de download cradles.
-4. **Signature Authenticode** via `Tools\Sign-NeoTech.ps1` :
-   - Certificat auto-signé RSA 2048 / SHA256, 5 ans
-   - Timestamp DigiCert (la signature reste valide même après expiration du cert)
-   - Tous les `.ps1` et `.psm1` sont signés
-5. **Import du cert dans `Cert:\LocalMachine\TrustedPeople`** via `Tools\Install-TrustedPublisher.ps1` :
-   - Après ça, Windows reconnaît le toolkit comme **éditeur de confiance**
-   - SmartScreen ne crie plus
-   - AMSI ne fait pas d'exception spéciale mais le code étant sain et signé, pas d'alerte
+1. **Try/catch défensif** sur tous les accès CIM/WMI (propriétés inexistantes sur certains OS)
+2. **`Invoke-NTWithTimeout`** sur les opérations réseau (`Test-NetConnection`, `netsh`, `ipconfig`) pour éviter les blocages
+3. **Logs en cas d'échec** : timeout, exception, accès refusé → message clair à l'utilisateur + ligne dans le log
 
-### Ce que cette méthode ne fait PAS
+Exemple concret : un `Test-NetConnection google.com` qui pendrait 30s en DNS cassé est tué en 5s avec un `[!!] Timeout (5s)` dans la console et `[Warning] TIMEOUT (5s) : Test google.com` dans le log.
 
-- **Pas de certificat EV** : la "réputation SmartScreen" n'est pas atteinte.
-  - Conséquence : la première exécution sur une machine **avant** l'import du
-    cert peut afficher un bandeau bleu « Windows a protégé votre ordinateur ».
-  - L'utilisateur clique « Informations complémentaires → Exécuter quand même »,
-    ou il lance `Install-TrustedPublisher.ps1` une fois et c'est terminé.
+## Roadmap
 
-- **Pas de soumission à Microsoft** : on n'a pas demandé à MS d'analyser le
-  binaire pour le whitelister. Si tu veux le faire, sors un `.exe` (ps2exe)
-  signé et soumets-le via le portail Microsoft MAPP.
+- [ ] Compil .exe automatique via CI
+- [ ] Sortie GUI colorée (rich text avec parsing des flux)
+- [ ] Thèmes GUI sélectionnables (dark/light/custom)
+- [ ] Module `NTCloud` pour inventaire multi-machines
+- [ ] Export JSON pour intégration SIEM
+- [ ] Tests Pester pour chaque fonction
 
----
+## Contribution
 
-## Logs et diagnostic
-
-Tout est tracé dans `Logs\NeoTech_<COMPUTERNAME>.log` (UTF-8, rotation à 2 MB).
-
-Format :
-```
-[2026-09-05 10:54:32.123] [Info] [Main] Demarrage NeoTech Toolkit (admin OK)
-[2026-09-05 10:54:35.456] [Error] [Network] ECHEC : Test 1.1.1.1 - timeout
-```
-
-Pour partager un diagnostic, envoie ce fichier `.log` (pas la stack trace
-PowerShell dans la console — le log est la source de vérité).
-
----
-
-## Limitations connues
-
-- **SFC et DISM** demandent du temps (5 à 30 min). Le script attend la fin, ne
-  pas l'interrompre. Le log CBS détaillé est dans `%WINDIR%\Logs\CBS\CBS.log`.
-- **Reset Windows Update** arrête 4 services et renomme 2 dossiers. Un
-  redémarrage est nécessaire ensuite.
-- **Batterie** : `Get-CimInstance Win32_Battery` ne retourne rien sur certains
-  modèles (rare, firmware exotique). Le rapport `powercfg /batteryreport`
-  reste le fallback universel.
-- **Windows Update COM** : si le service WUA est désactivé, la section Update
-  échoue proprement avec un message clair (pas de crash).
-- **Caractères accentués** : tous les fichiers sont en UTF-8 avec BOM pour
-  une compatibilité maximale entre PowerShell 5.1 et 7+.
-
----
+Issues et PR bienvenues sur [GitHub](../../issues). Pour les bugs, joindre le `Logs\NeoTech_<MACHINE>.log` de la session.
 
 ## Licence
 
-MIT / Usage interne TechSentinel.
-Toute redistribution doit conserver les métadonnées d'auteur et de copyright.
+MIT — utilisation libre, modification autorisée, redistribution permise. Conserver la mention de copyright.
+
+## Crédits
+
+- **Auteur** : [Neo Soda](https://techsentinel.fr)
+- **Site** : [techsentinel.fr](https://techsentinel.fr)
+- **Version** : 1.0.0 — septembre 2026
+- **Stack** : PowerShell 5.1+ · WPF · .NET 4.x
 
 ---
 
-**TechSentinel.fr** — *L'informatique qui marche, pas celle qui parle.*
+<div align="center">
+
+**[⬆ Retour en haut](#neotech-toolkit)**
+
+Si cet outil t'a fait gagner du temps, un ⭐ sur le repo fait toujours plaisir.
+
+</div>
