@@ -1,10 +1,12 @@
 <div align="center">
 
+<img src="docs/assets/neotech-toolkit-hero.svg" width="100%" alt="NeoTech Toolkit — bannière conceptuelle d’outils de diagnostic, sécurité et maintenance Windows">
+
 # NeoTech Toolkit
 
 **Boîte à outils d'administration et de diagnostic Windows, en PowerShell.**
 
-Console + GUI · Portable · Signée · Aucun prérequis
+Console + WPF · Scripts portables · PowerShell 5.1 intégré à Windows
 
 [Installation](#installation) · [Utilisation](#utilisation) · [Modules](#modules) · [Build EXE](#build-exe) · [Signer](#signature-authenticode)
 
@@ -16,9 +18,11 @@ Console + GUI · Portable · Signée · Aucun prérequis
 
 NeoTech Toolkit est un outil tout-en-un pour les admins et techniciens Windows. Il remplace 10+ scripts éparpillés par un exécutable unique, portable, qui fait l'audit matériel, la诊断 réseau, la posture de sécurité, l'inventaire logiciel, la réparation système et l'export de rapport.
 
-Conçu pour le terrain : aucune dépendance externe, fonctionne depuis une clé USB, signe ses propres scripts, compile en `.exe` unique.
+Conçu pour les interventions Windows : lancement depuis les scripts fournis, exécution depuis une clé USB possible et compilation en `.exe` proposée séparément via `ps2exe`. Les signatures auto-signées nécessitent une relation de confiance locale.
 
 ## Aperçu
+
+*Vue textuelle illustrative des catégories. Les captures réelles de la GUI restent à fournir.*
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -50,11 +54,13 @@ Conçu pour le terrain : aucune dépendance externe, fonctionne depuis une clé 
 
 ## Installation
 
-### Téléchargement direct
+### Récupérer les sources
 
-1. Télécharge [`NeoTechToolkit-vX.Y.Z.zip`](../../releases/latest)
-2. Dézippe où tu veux (clé USB, `C:\Tools\`, etc.)
-3. Double-clique sur `NeoTech Toolkit.bat`
+1. Téléchargez le [ZIP du dépôt](https://github.com/neosoda/NeoTech-Toolkit/archive/refs/heads/master.zip) ou clonez-le ci-dessous.
+2. Décompressez-le dans un dossier local (par exemple `C:\Tools\NeoTech`).
+3. Lancez `NeoTech Toolkit.bat`.
+
+**Distribution EXE :** ce README ne promet pas de binaire prêt à télécharger : aucune release publiée n’a été vérifiée. La compilation est décrite dans [Build EXE](#build-exe).
 
 ### Depuis le repo
 
@@ -75,7 +81,7 @@ Tous les scripts `.ps1` et `.psm1` sont signés avec un certificat auto-signé. 
 .\Tools\Install-TrustedPublisher.ps1
 ```
 
-Cela importe le certificat dans `LocalMachine\TrustedPeople`. Le toolkit est alors reconnu comme **éditeur de confiance** sur cette machine.
+Cette procédure configure une confiance **locale** envers un certificat auto-signé ; elle ne fournit ni signature par une autorité publique ni réputation Microsoft SmartScreen. N’installez cette confiance que si vous maîtrisez l’origine des scripts.
 
 ## Utilisation
 
@@ -199,7 +205,15 @@ Exemple concret : un `Test-NetConnection google.com` qui pendrait 30s en DNS cas
 
 ## Contribution
 
-Issues et PR bienvenues sur [GitHub](../../issues). Pour les bugs, joindre le `Logs\NeoTech_<MACHINE>.log` de la session.
+Issues et PR bienvenues sur [GitHub](https://github.com/neosoda/NeoTech-Toolkit/issues). Pour les bugs, joindre le `Logs\NeoTech_<MACHINE>.log` de la session.
+
+## Questions fréquentes
+
+**NeoTech Toolkit est-il un logiciel Windows portable ?** Les scripts du dépôt s'exécutent depuis leur dossier, avec les composants PowerShell présents sur Windows. La compilation EXE est une étape distincte.
+
+**Peut-il fonctionner sans droits administrateur ?** Certaines consultations sont possibles, mais plusieurs opérations réseau, sécurité et réparation exigent une élévation.
+
+**Un exécutable est-il déjà publié ?** Pas de téléchargement EXE annoncé ici sans release vérifiée. Consultez la [page des versions](https://github.com/neosoda/NeoTech-Toolkit/releases).
 
 ## Licence
 
